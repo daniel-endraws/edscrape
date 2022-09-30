@@ -6,14 +6,13 @@ from requests import Session
 class Api():
   """Class for interacting with the ed API"""
 
-  def __init__(self):
+  def __init__(self, saved_token: str = None):
     self.s = Session()
 
-    # Try to get a saved api token 
-    if TOKEN_FILE.exists():
+    if saved_token:
+      # Try to renew saved token
       try:
-        with open(TOKEN_FILE, "r") as f:
-          ed_token = self.renew_token(f.read())
+        ed_token = self.renew_token(saved_token)
         self.set_token(ed_token)
         return
       except Exception as e:
@@ -73,3 +72,21 @@ class Api():
     r.raise_for_status()
 
     return User(r.json())
+
+  def get_unread_threads(self, course_id, limit: int = 30) -> 'list[int]':
+    """Returns a list of unread thread ids"""
+    r = self.s.get(
+      BASE_URL + f"/courses/{course_id}/threads", 
+      params={
+        "filter": "unread",
+        "limit": limit,
+        "sort": "new"
+      })
+    r.raise_for_status()
+
+    return [thread["id"] for thread in r.json()["threads"]]
+
+  def read_thread(self, thread_id):
+    """Sends a post request to read the given thread"""
+    r = self.s.post(BASE_URL + f"/threads/{thread_id}/read")
+    r.raise_for_status()
