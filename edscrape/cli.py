@@ -23,6 +23,8 @@ def main():
   # Pick class
   user = api.get_user()
 
+  print(f"Logged in as {user.name} ({user.email})")
+
   course: Course = inquirer.select(
     message="Choose class:",
     choices=[{
@@ -34,7 +36,6 @@ def main():
 
   cid = course.id
   num_read = 0
-  import time
   while tids := api.get_unread_threads(cid):
     for tid in tids:
       api.read_thread(tid)

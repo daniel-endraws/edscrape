@@ -27,8 +27,8 @@ class Api():
     login_token = get_login_token(sso_url)
     print(f"Extracted login token: <{login_token}>")
     if login_token is None:
-      print("No token!!")
-      # TODO: error out
+      print("Error extracting login token...")
+      exit(1)
     ed_token = self.get_ed_token(login_token)
     self.set_token(ed_token)
 
