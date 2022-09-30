@@ -9,7 +9,7 @@ readme = "README.md"
 python = "~3.8"
 requests = "^2.28.1"
 pywebview = "^3.6.3"
-pythonnet = "2.5.2"
+pythonnet = {version = "2.5.2", platform = "win32"}
 inquirerpy = "^0.3.4"
 
 [tool.poetry.scripts]
