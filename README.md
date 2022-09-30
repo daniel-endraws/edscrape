@@ -14,6 +14,8 @@ Install `poetry` from [here](https://python-poetry.org/docs/) (although I would 
 
 ## Usage
 
-Run `poetry run python main.py`
+Run `poetry run edscrape`
 
-TODO: will make this better
+## Resources
+
+- Debug requests using [this](https://stackoverflow.com/questions/10588644/how-can-i-see-the-entire-http-request-thats-being-sent-by-my-python-application)

@@ -1,6 +1,6 @@
 import webview
 
-def get_login_token(url):
+def get_login_token(url) -> str:
   login_token = None
   print("Opening window")
   window = webview.create_window("Login with CalNetID", url)
@@ -10,6 +10,7 @@ def get_login_token(url):
     url: str = window.get_current_url()
 
     if "_logintoken" in url:
+      print(url)
       # URL https://edstem.org/us?_logintoken=5JsE73Q0pmtbH00a3qomgNro
       login_token = url.split("=")[1]
       window.destroy()
@@ -17,4 +18,5 @@ def get_login_token(url):
   window.events.loaded += on_loaded
 
   # Blocks until completed
-  webview.start(debug=True)
+  webview.start()
+  return login_token
