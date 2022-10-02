@@ -4,7 +4,13 @@ from . import BASE_URL, TOKEN_FILE
 from requests import Session
 
 class Api():
-  """Class for interacting with the ed API"""
+  """Class for interacting with the ed API
+  All methods (besides constructor and set_token) are "thread safe"
+  in the sense they don't mutate the session
+  (https://github.com/psf/requests/issues/2766)"""
+
+  # TODO: move over to asyncio and the aiohttp 
+  # https://docs.aiohttp.org/en/stable/
 
   def __init__(self, saved_token: str = None):
     self.s = Session()
@@ -73,20 +79,27 @@ class Api():
 
     return User(r.json())
 
-  def get_unread_threads(self, course_id, limit: int = 30) -> 'list[int]':
+  def get_threads(self, course_id, unread: bool = True, limit: int = 30, offset: int = 0) -> 'list[int]':
     """Returns a list of unread thread ids"""
     r = self.s.get(
       BASE_URL + f"/courses/{course_id}/threads", 
       params={
-        "filter": "unread",
+        "filter": "unread" if unread else None,
         "limit": limit,
+        "offset": offset,
         "sort": "new"
       })
     r.raise_for_status()
 
     return [thread["id"] for thread in r.json()["threads"]]
 
-  def read_thread(self, thread_id):
+  def read_thread(self, thread_id: int):
     """Sends a post request to read the given thread"""
     r = self.s.post(BASE_URL + f"/threads/{thread_id}/read")
+    r.raise_for_status()
+
+  def glance_thread(self, thread_id: int):
+    """Sends a post request to 'glance' at the given thread"""
+    # TODO: this gets rid of the (3 new), does this affect # viewed?
+    r = self.s.post(BASE_URL + f"/threads/{thread_id}/glance")
     r.raise_for_status()

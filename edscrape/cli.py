@@ -34,14 +34,24 @@ def main():
     vi_mode=True
   ).execute()
 
+  unread = inquirer.confirm(
+    message="Only check unread posts?",
+    default=True
+  ).execute()
+
   cid = course.id
   num_read = 0
-  while tids := api.get_unread_threads(cid):
+  while tids := api.get_threads(
+    cid,
+    unread=unread, 
+    offset=(0 if unread else num_read)
+  ):
     for tid in tids:
       api.read_thread(tid)
+      api.glance_thread(tid)
       num_read += 1
 
       # TODO: maybe query the actual read thing?
       print(f"Number of posts read: {num_read}", end="\r")
 
-  print(f"No more unread posts! Total posts read: {num_read}")
+  print(f"No more posts! Total posts read: {num_read}")
